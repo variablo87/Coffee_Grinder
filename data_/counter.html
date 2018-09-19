@@ -1,0 +1,362 @@
+<!doctype html>
+<html>
+
+<head>
+<meta charset = "utf-8" />
+<title>coffee grinder</title>
+
+<!-- link rel="stylesheet" href="http://192.168.4.1/style.css" -->
+<link rel="stylesheet" href="style.css">
+<!-- fullscreen mode for apple -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<!-- fullscreen mode for android -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+a: link.button,
+a: active.button,
+a: visited.button,
+a: hover.button {
+  margin: 30px 5px 0 2px;
+  padding: 7px 13px;
+}
+    html {
+        font-family: Helvetica;
+        display: inline-block;
+        margin: 0px auto;
+
+        }
+    .button {
+        background-color: #195B6A;
+        border: none;
+        color: white;
+        padding: 26px 40px;
+        text-decoration: none;
+        font-size: 30px;
+        margin: 2px;
+        cursor: pointer;
+        }
+    .button2 {
+        background-color: #77878A;
+        }
+ /* icon button */
+.btn {
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 10%;
+}
+/* Darker background on mouse-over */
+.btn:hover {
+    background-color: RoyalBlue;
+}
+
+.inp {
+    height: 30px;
+	width: 60%;
+    -moz-border-radius:10px; /* Firefox */
+    -webkit-border-radius: 10px; /* Safari, Chrome */
+    -khtml-border-radius: 10px; /* KHTML */
+    border-radius: 10px; /* CSS3 */
+    behavior:url("border-radius.htc");
+}
+
+.Blink {
+    animation: blinker 1.5s cubic-bezier(.5, 0, 1, 1) infinite alternate;
+}
+
+@keyframes blinker {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fixed {
+    position: fixed;
+    width: 95%;
+    bottom: 10px;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  margin: auto;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+<div class="loader" id = "loader"></div>
+<div class = "container">
+    <div id = "g1" class = "gauge" style="width:device-width; height:320px"></div>
+</div>
+
+<table id="settings" style="width:100%; visibility: visible;" >
+<tr>
+    <td>automode</td>
+    <td align="right"><label class="switch">
+      <input id="sw1" type="checkbox" onclick="statechanged()">
+      <span class="slider round"></span>
+    </label></td>
+</tr>
+<tr>
+    <td>manuel</td>
+    <td align="right"><label class="switch">
+      <input id="sw2" type="checkbox" onclick="statechanged()">
+      <span class="slider round"></span>
+    </label> </td>
+</tr>
+<tr>
+    <td>Soll-Gewicht</td>
+    <td align="right" style="vertical-align: middle;">
+        <input id="tb1" class="inp" type="number" min="0" inputmode="numeric" pattern="[0-9]*" value="7">
+          <button id="bu1" class="btn" onclick="statechanged()"><i class="icon-cogs"></i></button>
+    </td>
+</tr>
+<tr>
+    <td>update time</td>
+    <td align="right">
+        <input id="tb2" class="inp" type="number" min="0" inputmode="numeric" pattern="[0-9]*" value="14">
+          <button id="bu2" class="btn" onclick="statechanged()" ><i class="icon-cogs"></i></button>
+    </td>
+</tr>
+<tr>
+    <td><button id="bu3" class="btn" onclick="tara()" >
+			<i id="scale-icon" class="icon-balance-scale" ></i>
+		</button></td>
+    <td align="right">
+        <input id="tb3" class="inp" type="number" min="1" max="1000" inputmode="numeric" pattern="[0-9]*" value="500">
+          <button id="bu4" class="btn" onclick="calibrate()" >
+			<i class="icon-cog"></i>
+		  </button>
+    </td>
+</tr>
+</table>
+
+<script src = "raphael-2.1.4.min.js"> </script>
+<script src = "justgage.js"> </script>
+<script type = "text/javascript">
+var g1;
+var Analog0 = new Array(); // create the arrays for the analog readings here.
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    console.log("DOM fully loaded and parsed");
+	var loader = document.getElementById("loader");
+	loader.remove();
+	
+    g1 = new JustGage({
+        id: 'g1',
+        title: "coffee powder",
+        value: 49.555,
+        min: 0.0,
+        max: 100.0,
+        symbol: 'g',
+        pointer: true,
+        gaugeWidthScale: 0.6,
+        customSectors: [{
+          color: '#ff0000',
+          lo: 50,
+          hi: 100
+        }, {
+          color: '#00ff00',
+          lo: 0,
+          hi: 50
+        }],
+        counter: true,
+        decimals: 2
+      });
+});
+//192.168.4.1
+var connection = new WebSocket('ws://' + location.hostname + ':81/', ['arduino']);
+//var connection = new WebSocket('ws://192.168.4.1:81/', ['arduino']);
+connection.onclose = function(){
+        // Try to reconnect in 5 seconds
+		console.log('Try reconnect WebSocket');
+    //setTimeout(function(){connection = new WebSocket('ws://192.168.4.1:81/');}, 5000);
+    };
+
+connection.onopen = function () {
+  connection.send('GET_DEFAULT');
+  var element = document.getElementById("settings");
+  //element.style.backgroundColor ="green";
+  element.style.visibility="visible";
+  console.log("WebSocket connection opened");
+};
+
+connection.onerror = function (error) {
+  console.log('WebSocket Error ', error);
+  var element = document.getElementById("settings");
+  //element.style.backgroundColor ="red";
+  element.style.visibility="hidden";
+};
+
+connection.onmessage = function(evt)
+{
+  // handle websocket message. update attributes or values of elements that match the name on incoming message
+  //console.log("msg rec", evt.data);
+  var msgArray = evt.data.split(","); // split message by delimiter into a string array
+  //console.log("msgArray", msgArray[0]);
+  //console.log("msgArray", msgArray[1]);
+  //console.log("msgArray", msgArray[2]);
+  //console.log("msgArray", msgArray[3]);
+  var indicator = msgArray[1]; // the first element in the message array is the ID of the object to update
+  //console.log("indiactor", indicator);
+  if (indicator) // if an object by the name of the message exists, update its value or its attributes
+  {
+    switch (msgArray[1])
+    {
+      case "Arduino":
+        //console.log("Arduino ran");
+        var A0 = (msgArray[2]);
+        g1.refresh(A0, null);
+
+        var x = Analog0.length;
+        if (x <101)
+        {
+          Analog0[x] = A0;
+        }
+        else
+        {
+          Analog0.shift();
+          x = Analog0.length;
+          Analog0[x] = A0;
+        }
+        break;
+      case "UI":
+          //console.log("Update switch and button");
+          var sw1 = (msgArray[2]);
+          var sw2 = (msgArray[3]);
+          var tb1 = (msgArray[4]);
+          var tb2 = (msgArray[5]);
+          //document.getElementById("sw1").checked=!!+sw2;
+          //document.getElementById("sw2").checked=!!+sw1;
+          document.getElementById("tb1").value=tb1;
+          document.getElementById("tb2").value=tb2;
+		  //scale present
+		  var element = document.getElementById("scale-icon");
+		  element.style.visibility="visible"
+			if((msgArray[6])==0){
+				element.classList.add("Blink");
+				element.style.color = "red";
+			}
+        break;
+
+      default:
+        // unrecognized message type. do nothing
+        break;
+    } // switch
+  } // if (indicator)
+} // connection.onmessage
+;
+function statechanged() {
+    //wsconnection.send('1');//Send off
+    // Construct a msg object containing the data the server needs to process the message from the chat client.
+    var msg = [
+	  'SET',
+      document.getElementById("sw1").checked&1,
+      document.getElementById("sw2").checked&1,
+      document.getElementById("tb1").value,
+      document.getElementById("tb2").value
+    ];
+
+    // Send the msg object as a JSON-formatted string.
+    connection.send(JSON.stringify(msg));
+
+}
+function tara() {
+    connection.send(JSON.stringify(['TARA']));
+}
+
+function calibrate() {
+	 var msg = [
+      'CALIB',
+      document.getElementById("tb3").value
+    ];
+	connection.send(JSON.stringify(msg));
+}
+    </script>
+  </body>
+</html>

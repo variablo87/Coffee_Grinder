@@ -1,0 +1,17 @@
+{
+
+    "background_color": "purple",
+    "description": "Will setup your coffee grinder.",
+    "display": "fullscreen",
+    "icons": [
+        {
+            "src": "apple-touch-icon.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        }
+    ],
+    "name": "coffee grinder",
+    "short_name": "Mill",
+    "start_url": "counter.html"
+
+}
