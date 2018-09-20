@@ -174,7 +174,7 @@ a: hover.button {
     <div id = "g1" class = "gauge" style="width:device-width; height:320px"></div>
 </div>
 
-<table id="settings" style="width:100%; visibility: visible;" >
+<table id="settings" style="width:100%; visibility: hidden;" >
 <tr>
     <td>automode</td>
     <td align="right"><label class="switch">
@@ -183,14 +183,14 @@ a: hover.button {
     </label></td>
 </tr>
 <tr>
-    <td>manuel</td>
+    <td>manually</td>
     <td align="right"><label class="switch">
       <input id="sw2" type="checkbox" onclick="statechanged()">
       <span class="slider round"></span>
     </label> </td>
 </tr>
 <tr>
-    <td>Soll-Gewicht</td>
+    <td>setpoint</td>
     <td align="right" style="vertical-align: middle;">
         <input id="tb1" class="inp" type="number" min="0" inputmode="numeric" pattern="[0-9]*" value="7">
           <button id="bu1" class="btn" onclick="statechanged()"><i class="icon-cogs"></i></button>
@@ -220,7 +220,6 @@ a: hover.button {
 <script src = "justgage.js"> </script>
 <script type = "text/javascript">
 var g1;
-var Analog0 = new Array(); // create the arrays for the analog readings here.
 
 document.addEventListener("DOMContentLoaded", function(event) {
     console.log("DOM fully loaded and parsed");
@@ -291,19 +290,14 @@ connection.onmessage = function(evt)
       case "Arduino":
         //console.log("Arduino ran");
         var A0 = (msgArray[2]);
-        g1.refresh(A0, null);
+		    
+	var max = 100;
+	if(A0 > max){
+		max=1000;
+	}
+	    
+        g1.refresh(A0, max);
 
-        var x = Analog0.length;
-        if (x <101)
-        {
-          Analog0[x] = A0;
-        }
-        else
-        {
-          Analog0.shift();
-          x = Analog0.length;
-          Analog0[x] = A0;
-        }
         break;
       case "UI":
           //console.log("Update switch and button");
@@ -317,10 +311,13 @@ connection.onmessage = function(evt)
           document.getElementById("tb2").value=tb2;
 		  //scale present
 		  var element = document.getElementById("scale-icon");
-		  element.style.visibility="visible"
-			if((msgArray[6])==0){
+		  	if((msgArray[6])==0){
 				element.classList.add("Blink");
 				element.style.color = "red";
+			}
+			else{
+				element.classList.remove("Blink");
+				element.style.color = "white";
 			}
         break;
 
