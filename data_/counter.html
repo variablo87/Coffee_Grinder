@@ -190,31 +190,41 @@ a: hover.button {
     </label> </td>
 </tr>
 <tr>
-    <td>setpoint</td>
+    <td>setpoint (g)</td>
     <td align="right" style="vertical-align: middle;">
         <input id="tb1" class="inp" type="number" min="0" inputmode="numeric" pattern="[0-9]*" value="7">
           <button id="bu1" class="btn" onclick="statechanged()"><i class="icon-cogs"></i></button>
     </td>
 </tr>
 <tr>
-    <td>update time</td>
+    <td>update time (ms)</td>
     <td align="right">
         <input id="tb2" class="inp" type="number" min="0" inputmode="numeric" pattern="[0-9]*" value="14">
           <button id="bu2" class="btn" onclick="statechanged()" ><i class="icon-cogs"></i></button>
     </td>
 </tr>
 <tr>
+  <td>calibrate (g)</td>
+  <td align="right">
+    <input id="tb3" class="inp" type="number" min="1" max="1000" inputmode="numeric" pattern="[0-9]*" value="500">
+    <button id="bu4" class="btn" onclick="calibrate()" >
+    <i class="icon-cog"></i>
+    </button>
+  </td>
+</tr>
+<tr>
     <td><button id="bu3" class="btn" onclick="tara()" >
 			<i id="scale-icon" class="icon-balance-scale" ></i>
 		</button></td>
     <td align="right">
-        <input id="tb3" class="inp" type="number" min="1" max="1000" inputmode="numeric" pattern="[0-9]*" value="500">
-          <button id="bu4" class="btn" onclick="calibrate()" >
-			<i class="icon-cog"></i>
-		  </button>
+
     </td>
 </tr>
 </table>
+</br>
+<textarea id="logbook" rows="15" style="width:100%;">
+Logbook 
+</textarea>
 
 <script src = "raphael-2.1.4.min.js"> </script>
 <script src = "justgage.js"> </script>
@@ -229,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     g1 = new JustGage({
         id: 'g1',
         title: "coffee powder",
-        value: 49.555,
+        value: 50.0,
         min: 0.0,
         max: 100.0,
         symbol: 'g',
@@ -245,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
           hi: 50
         }],
         counter: true,
-        decimals: 2
+        decimals: 1
       });
 });
 //192.168.4.1
@@ -320,7 +330,9 @@ connection.onmessage = function(evt)
 				element.style.color = "white";
 			}
         break;
-
+    case "LOG":
+      updateLog(msgArray[2]);
+      break;
       default:
         // unrecognized message type. do nothing
         break;
@@ -353,6 +365,10 @@ function calibrate() {
       document.getElementById("tb3").value
     ];
 	connection.send(JSON.stringify(msg));
+}
+function updateLog(text) {
+  var oldtext = document.getElementById("logbook").value;
+  document.getElementById("logbook").value = text+"\n"+oldtext;
 }
     </script>
   </body>

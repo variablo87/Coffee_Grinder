@@ -16,21 +16,27 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <WebSocketsServer.h>
-#include "HX711.h"
+#include <HX711.h>
 
-typedef struct grinderSetting{
+typedef struct {
 	int autoMode;
 	int manuMode;
 	int setpoint_weight;
 	int updateTime;
 	int scale_is_connected;
 	int calibration_weight;
-};
+} grinderSetting;
 
-typedef union MEM_Grinder{
+typedef union {
 	grinderSetting grinder;
 	int webSetting[sizeof(grinderSetting)];
-};
+} MEM_Grinder;
+
+typedef enum {
+    WAIT,
+    FILL,
+    MANUAL
+} grinderState;
 
 class Coffee_Grinder
 {
@@ -39,7 +45,7 @@ class Coffee_Grinder
 	
 	void setup();
     void loop();
-    void setScaleFaktor();
+    void setScaleFactor();
   	void resetScale();
   	void tare();
   	void start();
@@ -47,7 +53,7 @@ class Coffee_Grinder
   	  	
   	MEM_Grinder mem;
   	float weight;
-  	float scale_faktor;
+  	float scale_factor;
     uint8_t socketNumber;
   private:
     int neg;
@@ -55,13 +61,17 @@ class Coffee_Grinder
   	int m_sckPin; 
   	int m_doutPin;
   	long scale_offset;
-  	
+  	grinderState m_state;
   	
   	float calibration_factor;
   		
   	unsigned long currentTime;
   	unsigned long loopTime;
   	
+		void saveConfig();
+		void loadConfig();
+		void stateMachine();
+		void logbook(String statement,float value );
   	HX711 scale;
 };
 

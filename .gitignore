@@ -1,0 +1,6 @@
+.pio
+.pioenvs
+.piolibdeps
+.vscode
+data
+src/version.h

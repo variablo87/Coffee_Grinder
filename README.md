@@ -1,4 +1,4 @@
-# Coffee Grinder
+# Coffee Grinder [![Build Status](https://travis-ci.com/variablo87/Coffee_Grinder.svg?branch=master)](https://travis-ci.com/variablo87/Coffee_Grinder)
 
 ![webpage](doku/webpage.png)
 

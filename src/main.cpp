@@ -6,9 +6,6 @@
  *  https://www.w3schools.com/howto/howto_css_loader.asp
 */
 
-//uncomment for fast development without AP mode 
-//#define OTA
-
 #include <FS.h>
 #include <ESP8266WiFi.h>
 
@@ -23,15 +20,7 @@
 const int SCALE_DOUT_PIN = D5;
 const int SCALE_SCK_PIN = D2;
 
-// Sonoff
-//const int RELAIS_PIN = D6;
-//const int AP_LED = D7;
-// MCUNode
-const int RELAIS_PIN = D0;//invert led
-const int AP_LED = D4;
-
-Coffee_Grinder grinder(RELAIS_PIN,1,SCALE_DOUT_PIN, SCALE_SCK_PIN);
-
+Coffee_Grinder grinder(RELAIS_PIN,RELAIS_INV,SCALE_SCK_PIN, SCALE_DOUT_PIN);
 
 const int AP_BUTTON = D3;
 
@@ -46,20 +35,21 @@ void setup() {
   delay(1000);
   
   SPIFFS.begin();
-  Serial.println(); Serial.print("Configuring access point...");
+  Serial.println("\nConfiguring grinder...");
   setupWiFi();
 #ifdef OTA  
   // Hostname defaults to esp8266-[ChipID]
   ArduinoOTA.setHostname("coffee-esp");
   // No authentication by default
-  ArduinoOTA.setPassword("nobbe");
+  //ArduinoOTA.setPassword("variablo");
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH)
       type = "sketch";
-    else // U_SPIFFS
+    else{ // U_SPIFFS
       type = "filesystem";
-    // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+      SPIFFS.end();}
+
     Serial.println("Start updating " + type);
     //switch Relais OFF
     grinder.stop();
@@ -80,7 +70,7 @@ void setup() {
   });
   ArduinoOTA.begin();
   IPAddress myIP = WiFi.localIP();
-#endif OTA 
+#endif //OTA 
 
 #ifndef OTA
   IPAddress myIP = WiFi.softAPIP();
@@ -106,20 +96,20 @@ void setup() {
 }
 
 void loop() {
-    
-    static unsigned long lled = 0;
-    unsigned long t;     // local var: type declaration at compile time
-	
-	grinder.loop();
+
+	  grinder.loop();
     server.handleClient();
+    ArduinoOTA.handle();
     
     if(Serial.available())
     {
       char temp = Serial.read();
       if(temp == '+' || temp == 'a')
-        grinder.scale_faktor += 1;
+        grinder.scale_factor += 1;
     }
 #ifndef OTA
+    static unsigned long lled = 0;
+    unsigned long t;     // local var: type declaration at compile time
     if(!digitalRead(AP_BUTTON)&&(Button==0)){     // read the input pin
       Button = 1;
       //digitalWrite(AP_LED, 0);
