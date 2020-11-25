@@ -61,6 +61,8 @@ class Coffee_Grinder
   	int m_sckPin; 
   	int m_doutPin;
   	long scale_offset;
+	unsigned long start_time;
+	unsigned long fill_time;
   	grinderState m_state;
   	
   	float calibration_factor;

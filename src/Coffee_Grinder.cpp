@@ -192,6 +192,7 @@ void Coffee_Grinder::tare(){
 }
 
 void Coffee_Grinder::start(){
+	start_time = millis();
 	digitalWrite(m_relaisPin, 1^neg);
 }
 
@@ -200,16 +201,22 @@ void Coffee_Grinder::stop(){
 }
 
 void Coffee_Grinder::loadConfig() {
+  int eeAddress = 0;
   // Loads configuration from EEPROM into RAM
   EEPROM.begin(4095);
-  EEPROM.get( 0, scale_factor );
+  EEPROM.get( eeAddress, scale_factor );
+  eeAddress += sizeof(float); //Move address to the next byte after float 'f'.
+  EEPROM.get( eeAddress, fill_time );
   EEPROM.end();
 }
 
 void Coffee_Grinder::saveConfig() {
+  int eeAddress = 0;
   // Save configuration from RAM into EEPROM
   EEPROM.begin(4095);
-  EEPROM.put( 0, scale_factor );
+  EEPROM.put( eeAddress, scale_factor );
+  eeAddress += sizeof(float); //Move address to the next byte after float 'f'.
+  EEPROM.put( eeAddress, fill_time );
   delay(200);
   EEPROM.commit();                      // Only needed for ESP8266 to get data written
   EEPROM.end();                         // Free RAM copy of structure
@@ -239,6 +246,7 @@ void Coffee_Grinder::stateMachine() {
 		}
     case FILL:{
 			if(weight >= mem.grinder.setpoint_weight){
+				fill_time = millis() - start_time;
 				stop();
 				m_state = WAIT;
 				logbook("FILL OFF",weight);
@@ -246,10 +254,12 @@ void Coffee_Grinder::stateMachine() {
 			break;
 		}
     case MANUAL:{
-			if(mem.grinder.manuMode==0){
+			if(((millis() - start_time) >= fill_time)||
+			   (mem.grinder.manuMode==0)){
 				stop();
 				m_state = WAIT;
-				logbook("MANUAL OFF",0);
+				logbook("MANUAL OFF",weight);
+				mem.grinder.manuMode = 0;
 			}
 			break;
 		}

@@ -3,4 +3,5 @@
 .piolibdeps
 .vscode
 data
+platformio.ini
 src/version.h

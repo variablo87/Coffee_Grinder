@@ -17,6 +17,17 @@
 #include "HelperFunctions.h"
 #include "Coffee_Grinder.h"
 
+#ifdef NODEMCU
+  #define RELAIS_INV 1
+  #define RELAIS_PIN 16   //D0
+  #define AP_LED     2    //D4
+#else
+  //SonOff
+  #define RELAIS_INV 0
+  #define RELAIS_PIN 12   //D6
+  #define AP_LED     13   //D7
+#endif
+
 const int SCALE_DOUT_PIN = D5;
 const int SCALE_SCK_PIN = D2;
 
