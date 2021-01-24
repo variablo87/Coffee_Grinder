@@ -35,7 +35,8 @@ typedef union {
 typedef enum {
     WAIT,
     FILL,
-    MANUAL
+    MANUAL,
+    FILL_TIME
 } grinderState;
 
 class Coffee_Grinder
@@ -67,6 +68,7 @@ class Coffee_Grinder
   		
   	unsigned long currentTime;
   	unsigned long loopTime;
+  	unsigned long fillTimeStart;
   	
 		void saveConfig();
 		void loadConfig();

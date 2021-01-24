@@ -88,6 +88,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
   }
 }
 
+const int AP_BUTTON = D3;
+
 Coffee_Grinder::Coffee_Grinder(int relaisPin,int outNegated,int sckPin, int doutPin)
 {
   pinMode(relaisPin, OUTPUT);
@@ -235,6 +237,12 @@ void Coffee_Grinder::stateMachine() {
 				m_state = MANUAL;
 				logbook("MANUAL ON",0);
 			}
+			if(!digitalRead(AP_BUTTON)){
+				fillTimeStart = currentTime;
+				start();
+				m_state = FILL_TIME;
+				logbook("FILL TIME ms:",mem.grinder.setpoint_weight);
+			}
 			break;
 		}
     case FILL:{
@@ -243,6 +251,14 @@ void Coffee_Grinder::stateMachine() {
 				m_state = WAIT;
 				logbook("FILL OFF",weight);
 			}
+			break;
+		}
+    case FILL_TIME:{
+                        if((currentTime - fillTimeStart) > mem.grinder.setpoint_weight) {                            
+				stop();
+				m_state = WAIT;
+				logbook("FILL OFF",0);
+                        }
 			break;
 		}
     case MANUAL:{
